@@ -59,19 +59,8 @@ class Actor {
         if(check === this) {
             return false;
         }
-        if (this.left <= (check.left || check.right)) {
-            if (this.right >= (check.left || check.right)) {
-                if (this.top <= (check.top || check.bottom)) {
-                    if (this.bottom >= (check.top || check.bottom)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        else {
-            return false;
-        }
         
     }
     
 }
+
