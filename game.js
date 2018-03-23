@@ -22,7 +22,7 @@ class Vector {
 }
 
 class Actor {
-    constructor(pos = new Vector(0,0),size= new Vector(1,1),speed= new Vector(0,0)) {
+    constructor(pos = new Vector(0,0),size = new Vector(1,1),speed = new Vector(0,0)) {
         this.pos = pos;
         this.size = size;
         this.speed = speed;
@@ -33,14 +33,45 @@ class Actor {
             writable: false,
             value: 'actor'
         })
+        Object.defineProperty(this,'left',{
+            writable: false,
+            value: pos.x
+        })
+        Object.defineProperty(this,'right',{
+            writable: false,
+            value: size.x + pos.x
+        })
+        Object.defineProperty(this,'top',{
+            writable: false,
+            value: pos.y
+        })
+        Object.defineProperty(this,'bottom',{
+            writable: false,
+            value: size.y + pos.y
+        })
     }
     act(){};
     
+    isIntersect(check) {
+        if(!(check instanceof Actor) || check === null) {
+            throw new Error('Неправильный аргумент')
+        }
+        if(check === this) {
+            return false;
+        }
+        if (this.left <= (check.left || check.right)) {
+            if (this.right >= (check.left || check.right)) {
+                if (this.top <= (check.top || check.bottom)) {
+                    if (this.bottom >= (check.top || check.bottom)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        else {
+            return false;
+        }
+        
+    }
+    
 }
-
-test
-
-sfghsdhfgsh sdfajsh 
-sdfsda 
-
-new test
