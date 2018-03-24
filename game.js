@@ -59,8 +59,46 @@ class Actor {
         if(check === this) {
             return false;
         }
-        
+        if (this.left <= check.right && check.left <= this.right && check.top <= this.bottom && check.top <= this.bottom) {
+            return true;
+        }
+        if (check.right === this.left || check.left === this.right) {
+            if (this.top >= check.top && this.top <= check.bottom) {
+                return true
+            }
+            if (this.bottom >= check.top && this.bottom <= check.bottom){
+                return true
+            }
+        } 
+        if (check.top === this.bottom || check.bottom === this.top) {
+            if (this.left >= check.left && this.left <= check.right) {
+                return true
+            } 
+            if (this.right >= check.left && this.right <= check.right) {
+                return true
+            }
+        }
+        else {
+            return false;
+        }
     }
-    
+}
+
+class Level {
+    constructor(grid = [],actors = []) {
+        this.grid = grid;
+        this.actors = actors;
+        this.height = grid.length;
+        if (grid.length === 0) {
+            this.width = 0;
+        } else {
+            this.width = Math.max.apply(Math,grid.map((el => el.length)));;
+        }
+        if (actors.length != 0) {
+            this.player = actors.find((el) => el.type === 'player');
+        }
+        this.status = null;
+        this.finishDelay = 1;
+    }
 }
 
