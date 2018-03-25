@@ -31,6 +31,7 @@ class Actor {
         }
         Object.defineProperty(this,'type',{
             writable: false,
+            enumerable: true,
             value: 'actor'
         })
         Object.defineProperty(this,'left',{
@@ -66,7 +67,7 @@ class Actor {
             if (this.top >= check.top && this.top <= check.bottom) {
                 return true
             }
-            if (this.bottom >= check.top && this.bottom <= check.bottom){
+            else if (this.bottom >= check.top && this.bottom <= check.bottom){
                 return true
             }
         } 
@@ -74,7 +75,7 @@ class Actor {
             if (this.left >= check.left && this.left <= check.right) {
                 return true
             } 
-            if (this.right >= check.left && this.right <= check.right) {
+            else if (this.right >= check.left && this.right <= check.right) {
                 return true
             }
         }
@@ -94,11 +95,33 @@ class Level {
         } else {
             this.width = Math.max.apply(Math,grid.map((el => el.length)));;
         }
-        if (actors.length != 0) {
-            this.player = actors.find((el) => el.type === 'player');
-        }
+        this.player = actors.findIndex((el) => el.type == 'player');
         this.status = null;
         this.finishDelay = 1;
     }
+    isFinished(){
+        if(this.status != null && this.finishDelay < 0 ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    actorAt(actor) {
+        if (actor === undefined || !(actor instanceof Actor)) {
+            throw new Error('Неправильный аргумент') 
+        } else if (this.length === 0 || this.actors.length === 1) {
+           return undefined;
+        } else {
+        return this.actors.find((el) => el.isIntersect(actor) === true)
+        }
+    }
 }
+
+let grid = [[1,2,3,4], [1,2,3,4],[1,2,3,4]]
+let player = new Actor(new Vector(0,0),new Vector(1,1));
+let mushroom = new Actor(new Vector (3,3),new Vector(1,1));
+const level = new Level(grid, [ player, mushroom ]);
+const actor = level.actorAt(player);
+console.log(actor)
+
 
