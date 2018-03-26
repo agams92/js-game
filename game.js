@@ -100,6 +100,24 @@ class Level {
         return this.actors.find((el) => el.isIntersect(actor) === true)
         }
     }
+    obstacleAt(objPos,objSize) {
+        if (!(objPos instanceof Vector) && !(objSize instanceof Vector)) {
+            throw new Error('Неправильные аргументы')
+        }
+        let obj = new Actor(objPos,objSize);
+        if (obj.left < 0 || obj.right > this.width || obj.top < 0) {
+            return 'wall';
+        } else if (obj.bottom > this.height) {
+            return 'lava';
+        }
+        let a;
+        for (let i = Math.floor(obj.top); i < obj.bottom; i++){
+            a = this.grid[i].findIndex((el) => el === 'wall' || el === 'lava');
+            if (a >= Math.floor(obj.left) && a < obj.right) {
+                return this.grid[i][a];
+            }
+        }
+    }
 }
 
 
@@ -109,14 +127,18 @@ class Player extends Actor {
         this.typeName = 'player';
     }
 }
+const gridSize = 2;
+let wallGrid = new Array(gridSize).fill(new Array(gridSize).fill('wall'));
+const level = new Level(wallGrid);
+const position = new Vector(0, 0);
+const size = new Vector(0.5, 0.5);
+const wall = level.obstacleAt(position, size);
+console.log(wall)
 
-let grid = [[1,2,3,4], [1,2,3,4],[1,2,3,4]]
-let player = new Player(new Vector(0,0),new Vector(1,1));
-let mushroom = new Actor(new Vector (3,3),new Vector(1,1));
-const level = new Level(grid, [ player, mushroom ]);
-console.log(level.player === player)
 
-/*let position = new Vector(30, 50);
+
+/*//Проверка на смежные границы - третий элемент возвращает true, т.к. находится внутри player
+let position = new Vector(30, 50);
 let size = new Vector(5, 5);
 const player = new Actor(position, size);
 const moveX = new Vector(1, 0);
@@ -133,5 +155,12 @@ coins.forEach(coin => {
   console.log(notIntersected)
   console.log('C' + coin.left, coin.right,coin.top,coin.bottom)
   console.log('P' + player.left, player.right,player.top,player.bottom)
-});*/
+});
 
+//Проверка на то, что у класса Level есть свойство player, в котором лежит объект со свойством type, равным player. Здесь все получается, однако в тестовом файле код возвращает undefined
+let grid = [[1,2,3,4], [1,2,3,4],[1,2,3,4]]
+let player = new Player(new Vector(0,0),new Vector(1,1));
+let mushroom = new Actor(new Vector (3,3),new Vector(1,1));
+const level = new Level(grid, [ player, mushroom ]);
+console.log(level.player === player) 
+*/
