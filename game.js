@@ -29,10 +29,11 @@ class Actor {
         if(!(this.pos instanceof Vector) || !(this.size instanceof Vector) || !(this.speed instanceof Vector)) {
             throw new Error ('Аргумент не является вектором типа Vector')
         }
+        this.typeName = 'actor';
         Object.defineProperty(this,'type',{
-            writable: false,
-            enumerable: true,
-            value: 'actor'
+            get() {
+                return this.typeName;
+            }
         })
         Object.defineProperty(this,'left',{
             writable: false,
@@ -60,25 +61,9 @@ class Actor {
         if(check === this) {
             return false;
         }
-        if (this.left <= check.right && check.left <= this.right && check.top <= this.bottom && check.top <= this.bottom) {
+        if (this.left < check.right && check.left < this.right && check.top < this.bottom && this.top < check.bottom) {
             return true;
-        }
-        if (check.right === this.left || check.left === this.right) {
-            if (this.top >= check.top && this.top <= check.bottom) {
-                return true
-            }
-            else if (this.bottom >= check.top && this.bottom <= check.bottom){
-                return true
-            }
         } 
-        if (check.top === this.bottom || check.bottom === this.top) {
-            if (this.left >= check.left && this.left <= check.right) {
-                return true
-            } 
-            else if (this.right >= check.left && this.right <= check.right) {
-                return true
-            }
-        }
         else {
             return false;
         }
@@ -95,7 +80,7 @@ class Level {
         } else {
             this.width = Math.max.apply(Math,grid.map((el => el.length)));;
         }
-        this.player = actors.findIndex((el) => el.type == 'player');
+        this.player = actors.find((el) => el.type === 'player');
         this.status = null;
         this.finishDelay = 1;
     }
@@ -117,11 +102,36 @@ class Level {
     }
 }
 
+
+class Player extends Actor {
+    constructor(){
+        super(...arguments);
+        this.typeName = 'player';
+    }
+}
+
 let grid = [[1,2,3,4], [1,2,3,4],[1,2,3,4]]
-let player = new Actor(new Vector(0,0),new Vector(1,1));
+let player = new Player(new Vector(0,0),new Vector(1,1));
 let mushroom = new Actor(new Vector (3,3),new Vector(1,1));
 const level = new Level(grid, [ player, mushroom ]);
-const actor = level.actorAt(player);
-console.log(actor)
+console.log(level.player === player)
 
+/*let position = new Vector(30, 50);
+let size = new Vector(5, 5);
+const player = new Actor(position, size);
+const moveX = new Vector(1, 0);
+const moveY = new Vector(0, 1);
+const coins = [
+  new Actor(position.plus(moveX.times(-1))),
+  new Actor(position.plus(moveY.times(-1))),
+  new Actor(position.plus(size).plus(moveX)),
+  new Actor(position.plus(size).plus(moveY))
+];
+
+coins.forEach(coin => {
+  const notIntersected = player.isIntersect(coin);
+  console.log(notIntersected)
+  console.log('C' + coin.left, coin.right,coin.top,coin.bottom)
+  console.log('P' + player.left, player.right,player.top,player.bottom)
+});*/
 
