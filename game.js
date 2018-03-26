@@ -29,28 +29,21 @@ class Actor {
         if(!(this.pos instanceof Vector) || !(this.size instanceof Vector) || !(this.speed instanceof Vector)) {
             throw new Error ('Аргумент не является вектором типа Vector')
         }
-        this.typeName = 'actor';
-        Object.defineProperty(this,'type',{
-            get() {
-                return this.typeName;
-            }
-        })
-        Object.defineProperty(this,'left',{
-            writable: false,
-            value: pos.x
-        })
-        Object.defineProperty(this,'right',{
-            writable: false,
-            value: size.x + pos.x
-        })
-        Object.defineProperty(this,'top',{
-            writable: false,
-            value: pos.y
-        })
-        Object.defineProperty(this,'bottom',{
-            writable: false,
-            value: size.y + pos.y
-        })
+    }
+    get type(){
+        return 'actor';
+    }
+    get left() {
+        return this.pos.x;
+    }
+    get right() {
+        return this.size.x + this.pos.x;
+    }
+    get top(){
+        return this.pos.y;
+    }
+    get bottom(){
+        return this.size.y + this.pos.y;
     }
     act(){};
     
@@ -61,13 +54,9 @@ class Actor {
         if(check === this) {
             return false;
         }
-        if (this.left < check.right && check.left < this.right && check.top < this.bottom && this.top < check.bottom) {
-            return true;
-        } 
-        else {
-            return false;
-        }
+        return this.left < check.right && check.left < this.right && check.top < this.bottom && this.top < check.bottom;
     }
+
 }
 
 class Level {
@@ -130,40 +119,3 @@ class Player extends Actor {
         this.typeName = 'player';
     }
 }
-
-let mushroom = new Actor();
-let giftSmall = new Actor(new Vector(2,2))
-const level = new Level(undefined, [ mushroom, giftSmall ]);
-level.removeActor(mushroom);
-console.log(level.actors.findIndex((el) => el === mushroom))
-
-
-
-
-/*//Проверка на смежные границы - третий элемент возвращает true, т.к. находится внутри player
-let position = new Vector(30, 50);
-let size = new Vector(5, 5);
-const player = new Actor(position, size);
-const moveX = new Vector(1, 0);
-const moveY = new Vector(0, 1);
-const coins = [
-  new Actor(position.plus(moveX.times(-1))),
-  new Actor(position.plus(moveY.times(-1))),
-  new Actor(position.plus(size).plus(moveX)),
-  new Actor(position.plus(size).plus(moveY))
-];
-
-coins.forEach(coin => {
-  const notIntersected = player.isIntersect(coin);
-  console.log(notIntersected)
-  console.log('C' + coin.left, coin.right,coin.top,coin.bottom)
-  console.log('P' + player.left, player.right,player.top,player.bottom)
-});
-
-//Проверка на то, что у класса Level есть свойство player, в котором лежит объект со свойством type, равным player. Здесь все получается, однако в тестовом файле код возвращает undefined
-let grid = [[1,2,3,4], [1,2,3,4],[1,2,3,4]]
-let player = new Player(new Vector(0,0),new Vector(1,1));
-let mushroom = new Actor(new Vector (3,3),new Vector(1,1));
-const level = new Level(grid, [ player, mushroom ]);
-console.log(level.player === player) 
-*/
