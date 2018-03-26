@@ -118,6 +118,9 @@ class Level {
             }
         }
     }
+    removeActor(toRemove) {
+        this.actors.splice(this.actors.findIndex((el) => el === toRemove),1);
+    }
 }
 
 
@@ -127,13 +130,13 @@ class Player extends Actor {
         this.typeName = 'player';
     }
 }
-const gridSize = 2;
-let wallGrid = new Array(gridSize).fill(new Array(gridSize).fill('wall'));
-const level = new Level(wallGrid);
-const position = new Vector(0, 0);
-const size = new Vector(0.5, 0.5);
-const wall = level.obstacleAt(position, size);
-console.log(wall)
+
+let mushroom = new Actor();
+let giftSmall = new Actor(new Vector(2,2))
+const level = new Level(undefined, [ mushroom, giftSmall ]);
+level.removeActor(mushroom);
+console.log(level.actors.findIndex((el) => el === mushroom))
+
 
 
 
