@@ -189,6 +189,7 @@ class LevelParser {
         let actors = this.createActors(level);
         return new Level(grid,actors);
     }
+<<<<<<< HEAD
 }
 
 class Fireball extends Actor {
@@ -247,6 +248,66 @@ class FireRain extends Fireball {
     }
 }
 
+=======
+}
+
+class Fireball extends Actor {
+    constructor(pos = new Vector(0,0),speed = new Vector(0,0)){
+        super(...arguments);
+        this.pos = pos;
+        this.speed = speed;
+        this.size = new Vector(1,1)
+    }
+    get type() {
+        return 'fireball';
+    }
+
+    getNextPosition(time = 1){
+        let nextPos = this.pos.plus(this.speed.times(time));
+        return new Vector(nextPos.x,nextPos.y);
+    }
+
+    handleObstacle() {
+        this.speed = this.speed.times(-1);
+    }
+
+    act(time,level) {
+        let nextPos = this.getNextPosition(time);
+        if(level.obstacleAt(this.pos,this.size) === 'wall' || level.obstacleAt(this.pos,this.size) === 'lava') {
+            this.handleObstacle();
+        } else {
+            this.pos = nextPos;
+        }
+    }
+}
+
+class HorizontalFireball extends Fireball {
+    constructor(pos) {
+        super(...arguments);
+        this.speed = new Vector(2,0);
+    }
+}
+
+class VerticalFireball extends Fireball {
+    constructor(pos) {
+        super(...arguments);
+        this.speed = new Vector(0,2);
+    }
+}
+
+class FireRain extends Fireball {
+    constructor(pos){
+        super(...arguments);
+        this.speed = new Vector(0,3);
+        this.initialPos = pos;
+    }
+
+    handleObstacle(){
+        this.pos = this.initialPos;
+    }
+}
+
+>>>>>>> cca1fe1b7d91a23ab0e9a4afa85e2826da539a84
 class Coin extends Actor {
     constructor(pos = new Vector(0,0)){
         super(...arguments);
@@ -264,6 +325,7 @@ class Coin extends Actor {
     updateSpring(time = 1) {
         this.spring = this.spring + (this.springSpeed * time);
     }
+<<<<<<< HEAD
 
     getSpringVector() {
         let y = Math.sin(this.spring) * 0.07;
@@ -275,6 +337,8 @@ class Coin extends Actor {
         let nextPos = this.pos.plus(this.getSpringVector());
         return nextPos;
     }
+=======
+>>>>>>> cca1fe1b7d91a23ab0e9a4afa85e2826da539a84
 }
 
 class Player extends Actor {
