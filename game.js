@@ -8,8 +8,7 @@ class Vector {
     plus(vector) {
         if (!(vector instanceof Vector)) {
             throw new Error('Можно прибавлять к вектору только вектор типа Vector');
-        }
-        else {
+        } else {
             return new Vector(this.x + vector.x,this.y + vector.y);
         }
     }
@@ -158,16 +157,14 @@ class LevelParser {
     }
 
     createGrid(gridPlan) {
-        let result = [];
-        for (let item of gridPlan) {
-            result.push(item.split('').map((el) => this.obstacleFromSymbol(el)));
-        }
-        return result;
+        return gridPlan.map((item) => {
+            return item.split('').map((el) => this.obstacleFromSymbol(el));
+        })
     }
 
     createActors(toActors) {
         let result = [];
-        if (this.symbolsList !== undefined) {
+        /*if (this.symbolsList !== undefined) {
             toActors.forEach((row,rowIndex) => {
                 row.split('').forEach((column,columnIndex) => {
                     let actorConstructor = this.actorFromSymbol(column);
@@ -179,8 +176,22 @@ class LevelParser {
                     }
                 });
             });
+        }*/
+        if (this.symbolsList !== undefined) {
+            return toActors.map((row,rowIndex) => {
+                return row.split('').map((column,columnIndex) => {
+                    /*let actorConstructor = this.actorFromSymbol(column);
+                    if (actorConstructor !== undefined && typeof(actorConstructor) == 'function') {
+                        let actor = new actorConstructor(new Vector(columnIndex,rowIndex));
+                        if (actor instanceof Actor) {
+                            return actor;
+                        }
+                    }*/
+                    return column
+                })
+            })
         }
-        return result;
+        //return result;
     }
     parse(level){
         let grid = this.createGrid(level);
@@ -188,6 +199,11 @@ class LevelParser {
         return new Level(grid,actors);
     }
 }
+
+let Gift, Mushroom;
+const parser1 = new LevelParser({ o: Actor, z: Mushroom });
+const actors1 = parser1.createActors(['hgog', '@hgjgzh']);
+console.log(actors1)
 
 /*------Конструктор базовой шаровой молнии-------*/
 class Fireball extends Actor {
@@ -339,5 +355,5 @@ class Player extends Actor {
     '|': VerticalFireball
   }
   const parser = new LevelParser(actorDict);
-  runGame(schemas, parser, DOMDisplay)
-    .then(() => alert('Вы прошли игру!'));
+  //runGame(schemas, parser, DOMDisplay)
+   // .then(() => alert('Вы прошли игру!'));
