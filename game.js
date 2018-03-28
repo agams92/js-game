@@ -1,4 +1,5 @@
 'use strict';
+/*------Конструктор вектора-------*/
 class Vector {
     constructor(x = 0,y = 0) {
         this.x = x;
@@ -17,13 +18,14 @@ class Vector {
     }
 }
 
+/*------Конструктор движущегося объекта-------*/
 class Actor {
     constructor(pos = new Vector(0,0),size = new Vector(1,1),speed = new Vector(0,0)) {
         this.pos = pos;
         this.size = size;
         this.speed = speed;
         if(!(this.pos instanceof Vector) || !(this.size instanceof Vector) || !(this.speed instanceof Vector)) {
-            throw new Error ('Аргумент не является вектором типа Vector')
+            throw new Error ('Аргумент не является вектором типа Vector');
         }
     }
 
@@ -56,6 +58,7 @@ class Actor {
     }
 }
 
+/*------Конструктор свойств уровня-------*/
 class Level {
     constructor(grid = [],actors = []) {
         this.grid = grid;
@@ -130,7 +133,7 @@ class Level {
     }
 }
 
-
+/*------Конструктор самого уровня-------*/
 class LevelParser {
     constructor(symbolsList){
         this.symbolsList = symbolsList;
@@ -157,8 +160,7 @@ class LevelParser {
     createGrid(gridPlan) {
         let result = [];
         for (let item of gridPlan) {
-            let a = item.split('').map((el) => this.obstacleFromSymbol(el));
-            result.push(a);
+            result.push(item.split('').map((el) => this.obstacleFromSymbol(el)));
         }
         return result;
     }
@@ -168,15 +170,15 @@ class LevelParser {
         if (this.symbolsList !== undefined) {
             toActors.forEach((row,rowIndex) => {
                 row.split('').forEach((column,columnIndex) => {
-                    let a = this.actorFromSymbol(column);
-                    if (a !== undefined && typeof(a) == 'function') {
-                        let b = new a(new Vector(columnIndex,rowIndex));
-                        if (b instanceof Actor) {
-                            result.push(b)
+                    let actorConstructor = this.actorFromSymbol(column);
+                    if (actorConstructor !== undefined && typeof(actorConstructor) == 'function') {
+                        let actor = new actorConstructor(new Vector(columnIndex,rowIndex));
+                        if (actor instanceof Actor) {
+                            result.push(actor);
                         }
                     }
-                })
-            })
+                });
+            });
         }
         return result;
     }
@@ -187,12 +189,13 @@ class LevelParser {
     }
 }
 
+/*------Конструктор базовой шаровой молнии-------*/
 class Fireball extends Actor {
     constructor(pos = new Vector(0,0),speed = new Vector(0,0)){
         super(...arguments);
         this.pos = pos;
         this.speed = speed;
-        this.size = new Vector(1,1)
+        this.size = new Vector(1,1);
     }
     get type() {
         return 'fireball';
@@ -209,7 +212,7 @@ class Fireball extends Actor {
 
     act(time,level) {
         let nextPos = this.getNextPosition(time);
-        if(level.obstacleAt(this.pos,this.size) === 'wall' || level.obstacleAt(this.pos,this.size) === 'lava') {
+        if(level.obstacleAt(nextPos,this.size) === 'wall' || level.obstacleAt(nextPos,this.size) === 'lava') {
             this.handleObstacle();
         } else {
             this.pos = nextPos;
@@ -217,6 +220,7 @@ class Fireball extends Actor {
     }
 }
 
+/*------Конструкторы горизонтальной, вертикальной шаровой молнии-------*/
 class HorizontalFireball extends Fireball {
     constructor(pos) {
         super(...arguments);
@@ -231,6 +235,7 @@ class VerticalFireball extends Fireball {
     }
 }
 
+/*------Конструктор огненного дождя-------*/
 class FireRain extends Fireball {
     constructor(pos){
         super(...arguments);
@@ -243,10 +248,12 @@ class FireRain extends Fireball {
     }
 }
 
+/*------Конструктор монеты-------*/
 class Coin extends Actor {
     constructor(pos = new Vector(0,0)){
         super(...arguments);
-        this.pos = pos.plus(new Vector(0.2,0.1))
+        this.pos = pos.plus(new Vector(0.2,0.1));
+        this.startPos = pos.plus(new Vector(0.2,0.1));
         this.size = new Vector(0.6,0.6);
         this.springSpeed = 8;
         this.springDist = 0.07;
@@ -268,11 +275,16 @@ class Coin extends Actor {
 
     getNextPosition(time = 1) {
         this.spring += this.springSpeed * time;
-        let nextPos = this.pos.plus(this.getSpringVector());
+        let nextPos = this.startPos.plus(this.getSpringVector());
         return nextPos;
+    }
+
+    act (time){
+        this.pos = this.getNextPosition(time);
     }
 }
 
+/*------Конструктор игрока-------*/
 class Player extends Actor {
     constructor(pos = new Vector(0,0)){
         super(...arguments);
@@ -284,3 +296,48 @@ class Player extends Actor {
         return 'player';
     }
 }
+
+/*------Игра-------*/
+
+  const schemas = [
+    [
+      '         ',
+      '         ',
+      '    =    ',
+      '       o ',
+      '     !xxx',
+      ' @       ',
+      'xxx!     ',
+      '         '
+    ],
+    [
+      '      v  ',
+      '    v    ',
+      '  v      ',
+      '        o',
+      '        x',
+      '@   x    ',
+      'x        ',
+      '         '
+    ],
+    [
+    '  |   v       ',
+    '     =      o ',
+    '         xxxxx',
+    '              ',
+    'xxxx          ',
+    '             o',
+    '@        xxxxx',
+    'xxxxx!!!!!!!!!'
+      ]
+  ];
+  const actorDict = {
+    '@': Player,
+    'v': FireRain,
+    '=': HorizontalFireball,
+    'o': Coin,
+    '|': VerticalFireball
+  }
+  const parser = new LevelParser(actorDict);
+  runGame(schemas, parser, DOMDisplay)
+    .then(() => alert('Вы прошли игру!'));
