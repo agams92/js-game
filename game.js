@@ -164,7 +164,7 @@ class LevelParser {
 
     createActors(toActors) {
         let result = [];
-        /*if (this.symbolsList !== undefined) {
+        if (this.symbolsList !== undefined) {
             toActors.forEach((row,rowIndex) => {
                 row.split('').forEach((column,columnIndex) => {
                     let actorConstructor = this.actorFromSymbol(column);
@@ -176,22 +176,8 @@ class LevelParser {
                     }
                 });
             });
-        }*/
-        if (this.symbolsList !== undefined) {
-            return toActors.map((row,rowIndex) => {
-                return row.split('').map((column,columnIndex) => {
-                    /*let actorConstructor = this.actorFromSymbol(column);
-                    if (actorConstructor !== undefined && typeof(actorConstructor) == 'function') {
-                        let actor = new actorConstructor(new Vector(columnIndex,rowIndex));
-                        if (actor instanceof Actor) {
-                            return actor;
-                        }
-                    }*/
-                    return column
-                })
-            })
         }
-        //return result;
+        return result;
     }
     parse(level){
         let grid = this.createGrid(level);
@@ -199,11 +185,6 @@ class LevelParser {
         return new Level(grid,actors);
     }
 }
-
-let Gift, Mushroom;
-const parser1 = new LevelParser({ o: Actor, z: Mushroom });
-const actors1 = parser1.createActors(['hgog', '@hgjgzh']);
-console.log(actors1)
 
 /*------Конструктор базовой шаровой молнии-------*/
 class Fireball extends Actor {
@@ -317,24 +298,25 @@ class Player extends Actor {
 
   const schemas = [
     [
-      '         ',
-      '         ',
-      '    =    ',
-      '       o ',
-      '     !xxx',
-      ' @       ',
-      'xxx!     ',
-      '         '
+      '  |      |     ',
+      '             o ',
+      '           xxx ',
+      ' =             ',
+      '       o       ',
+      '    !xxxx      ',
+      '@             o',
+      'xxx!!!!!!!!!!!x'
     ],
     [
-      '      v  ',
-      '    v    ',
-      '  v      ',
-      '        o',
-      '        x',
-      '@   x    ',
-      'x        ',
-      '         '
+      '  v         |  ',
+      '               ',
+      ' =             ',
+      '        xxx    ',
+      '               ',
+      '               ',
+      '@             o',
+      'x   xxx     xxx',
+      '!!!!!!!!!!!!!!!'
     ],
     [
     '  |   v       ',
@@ -355,5 +337,10 @@ class Player extends Actor {
     '|': VerticalFireball
   }
   const parser = new LevelParser(actorDict);
-  //runGame(schemas, parser, DOMDisplay)
-   // .then(() => alert('Вы прошли игру!'));
+  runGame(schemas, parser, DOMDisplay)
+    .then(function resolver(){
+        if(confirm('Вы только что просто так потратили несколько минут своей жизни! Потратить еще?')){
+            return runGame(schemas, parser, DOMDisplay)
+            .then(resolver)
+        }
+    })
