@@ -335,12 +335,12 @@ class Player extends Actor {
     '=': HorizontalFireball,
     'o': Coin,
     '|': VerticalFireball
-  }
+  };
   const parser = new LevelParser(actorDict);
   runGame(schemas, parser, DOMDisplay)
     .then(function resolver(){
         if(confirm('Вы только что просто так потратили несколько минут своей жизни! Потратить еще?')){
             return runGame(schemas, parser, DOMDisplay)
-            .then(resolver)
+            .then(resolver);
         }
-    })
+    });
